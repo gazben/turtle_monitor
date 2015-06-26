@@ -1,0 +1,25 @@
+<launch>
+	<node
+	  pkg="turtlesim"
+	  type="turtlesim_node"
+	  name="Leo"
+	  required="true"
+	/>
+	
+	<node
+	  pkg="turtle_monitor"
+	  type="mission_cntrl_groovy"
+	  name="vel_pub"
+	  launch-prefix="xterm -e"
+	  respawn="true"
+	/>
+
+	<node
+	  pkg="turtle_monitor"
+	  type="vel_monitor"
+	  name="vel_sub"
+	  launch-prefix="xterm -e"
+	/>
+</launch>
+
+

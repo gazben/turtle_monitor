@@ -2,7 +2,11 @@
 
 This package contains a demo of a monitor which subscribes to the velocity commands of a turtlesim turtle.
 
-To run the package, you must have an Ubuntu 12.04 operating system and ROS-groovy installed on your workstation.
+Required Software:
+  * Ubuntu 12.04
+  * ROS Groovy
+  * turtlesim
+  * C++11 compatible compiler
 
 How to run the demo:
   * Copy the package in your source folder ( ~/ros/src$ )

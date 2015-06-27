@@ -26,7 +26,7 @@ How to run the demo:
   or
 
   ```  
-  catkin_make install --only-pkg-with-deps turtle_monitor
+  catkin_make --only-pkg-with-deps turtle_monitor
   ```
 
  - By running the following command the launchfile will set up the demo:

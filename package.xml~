@@ -5,16 +5,15 @@
   <description>The turtle_monitor package</description>
 
   <maintainer email="davidmtamas@gmail.com">dmt</maintainer>
-
+  <maintainer email="bencegazder@gmail.com">gazben</maintainer>
   
-  <license>TODO</license>
+  <license>GPLv2</license>
   
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
-  <run_depend>roscpp</run_depend>
   <build_depend>turtlesim</build_depend>
+    
+  <run_depend>roscpp</run_depend>
   <run_depend>turtlesim</run_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <run_depend>geometry_msgs</run_depend>
   
 </package>

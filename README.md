@@ -7,6 +7,7 @@ Required Software:
   * ROS Groovy
   * turtlesim
   * C++11 compatible compiler
+  * Boost 1.58 library
 
 How to run the demo:
   * Copy the package in your source folder ( ~/ros/src$ )

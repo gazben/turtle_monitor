@@ -2,6 +2,8 @@
 #include <turtlesim/Velocity.h>
 #include <iomanip>
 
+
+
 #define pi 3.14159265359
 enum Direction {
   right, down, left, up
@@ -18,7 +20,6 @@ rule_state rs = notup;
 
 
 void rule() {
-
   switch (rs) {
     case notup:
 
@@ -42,16 +43,12 @@ void rule() {
       }
       break;
   }
-
-
 }
 
 void velMessageRecieved(const turtlesim::Velocity &msg) {
   ROS_INFO_STREAM(std::setprecision(2) << std::fixed << "angular: " << msg.angular << ", linear:" << msg.linear);
 
-
   switch (dir) {
-
     case right:
       if (msg.angular < 0)
         dir = down;
@@ -131,11 +128,10 @@ void velMessageRecieved(const turtlesim::Velocity &msg) {
       }
       ROS_INFO_STREAM("facing up");
       break;
-
   }
-
   ROS_INFO_STREAM("______");
 }
+
 
 
 int main(int argc, char **argv) {

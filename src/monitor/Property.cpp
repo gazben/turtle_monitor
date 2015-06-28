@@ -12,6 +12,7 @@ trilean Property::Evaluate(Property* root)
 
   bool isChanged = 0;
 
+  EventInterfaceHandler::getinstance()->getNextEvent();
   //while (result == UNKNOWN){
     isChanged = false;
 
@@ -34,7 +35,7 @@ trilean Property::Evaluate(Property* root)
 
         //give the output to the input
         if (currentNode->inputStates.size() != currentNode->childrenNode->outputStates.size()){
-          throw std::runtime_error("Invalid eval function size!");
+          ROS_ERROR_STREAM("Invalid eval function size!");
         }
 
         //COPY right now, optimise later!
@@ -59,26 +60,6 @@ trilean Property::Evaluate(Property* root)
 
   //ROS_INFO_STREAM( (trilean::tostring(result)).c_str() );
   return result;
-}
-
-void Property::ChildrenNode(Property* val)
-{
-  childrenNode = val;
-}
-
-Property* Property::ChildrenNode() const
-{
-  return childrenNode;
-}
-
-void Property::RootNode(class Property* val)
-{
-  rootNode = val;
-}
-
-Property* Property::RootNode() const
-{
-  return rootNode;
 }
 
 std::vector<trilean> Property::InputStates() const
@@ -130,7 +111,7 @@ trilean EVAL_s0(Property* _prop)
               AND_3(
                   NOT_3(_prop->isEventFired(EVENT_DOWN)),
                   NAND_3(
-                      _prop->isEventFired(EVENT_LEFT),
+                      _prop->isEventFired(EVENT_RIGHT),
                       _prop->InputStates()[0])
               )
           ),
@@ -143,7 +124,7 @@ trilean EVAL_s1a(Property* _prop)
   return
       NAND_3(
           NOT_3(_prop->isEventFired(EVENT_DOWN)),
-          NAND_3(_prop->isEventFired(EVENT_LEFT), _prop->InputStates()[1])
+          NAND_3(_prop->isEventFired(EVENT_RIGHT), _prop->InputStates()[1])
       );
 }
 

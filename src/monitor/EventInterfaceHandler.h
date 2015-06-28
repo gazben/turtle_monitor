@@ -7,7 +7,6 @@ If an event happens in the system, it will trigger a function here.
 */
 
 /* GLOBAL INCLUDES */
-#include <fstream>
 #include <deque>
 #include <string>
 /* LOCAL INCLUDES */
@@ -17,19 +16,11 @@ If an event happens in the system, it will trigger a function here.
 class EventInterfaceHandler{
 private:
   static EventInterfaceHandler* instance;
-  SR_regtype readNextLine();
-
 protected:
-  std::ifstream eventFile;
   std::deque<SR_regtype> eventQueue;
-
 public:
   static EventInterfaceHandler* getinstance();
-
-  ~EventInterfaceHandler();
   SR_regtype getNextEvent();
-
-  void readEventsFromFile(std::string filename);
   void insertEvent(SR_regtype params);
 };
 

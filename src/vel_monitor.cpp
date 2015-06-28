@@ -22,12 +22,12 @@ void velMessageRecieved(const turtlesim::Velocity &msg) {
   }
 
   if(msg.linear == 0 && msg.angular > 0){
-    tempStateReg |= EVENT_LEFT;
+    tempStateReg |= EVENT_RIGHT;
     ROS_INFO_STREAM("LEFT");
   }
 
   if(msg.linear== 0 && msg.angular < 0){
-    tempStateReg |= EVENT_RIGHT;
+    tempStateReg |= EVENT_LEFT;
     ROS_INFO_STREAM("RIGHT");
   }
 

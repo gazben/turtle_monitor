@@ -34,7 +34,7 @@ How to run the demo:
     catkin_make install --only-pkg-with-deps turtle_monitor
     ```
 
- * By running the following command the launchfile will set up the demo:
+  * By running the following command the launchfile will set up the demo:
 
     ``` 
     roslaunch turtle_monitor turtle_monitor.launch

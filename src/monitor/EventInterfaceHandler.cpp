@@ -36,16 +36,16 @@ SR_regtype EventInterfaceHandler::readNextLine()
     switch (c)
     {
     case 'a':
-      tempStateReg |= EVENT_A;
+      tempStateReg |= EVENT_UP;
       break;
     case 'b':
-      tempStateReg |= EVENT_B;
+      tempStateReg |= EVENT_DOWN;
       break;
     case 'c':
-      tempStateReg |= EVENT_C;
+      tempStateReg |= EVENT_LEFT;
       break;
     case 'd':
-      tempStateReg |= EVENT_D;
+      tempStateReg |= EVENT_RIGHT;
       break;
     case '\n':
       break;
@@ -57,7 +57,8 @@ SR_regtype EventInterfaceHandler::readNextLine()
   }
 }
 
-void EventInterfaceHandler::insertEvent(SR_regtype params) {
+void EventInterfaceHandler::insertEvent(SR_regtype params)
+{
   instance->eventQueue.push_back(params);
 }
 

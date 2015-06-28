@@ -3,14 +3,7 @@
 #include <signal.h>
 #include <termios.h>
 #include "std_msgs/String.h"
-#include <unistd.h>
-#include <string>
 
-#define KEYCODE_R 0x43
-#define KEYCODE_L 0x44
-#define KEYCODE_U 0x41
-#define KEYCODE_D 0x42
-#define KEYCODE_Q 0x71
 #define pi 3.14159265359
 
 class TeleopTurtle
@@ -76,7 +69,6 @@ void TeleopTurtle::keyLoop()
   std_msgs::String cmd;
 
   // get the console in raw mode
-
   tcgetattr(kfd, &cooked);
   memcpy(&raw, &cooked, sizeof(struct termios));
   raw.c_lflag &=~ (ICANON | ECHO);
@@ -85,9 +77,9 @@ void TeleopTurtle::keyLoop()
   raw.c_cc[VEOF] = 2;
   tcsetattr(kfd, TCSANOW, &raw);
 
-  for(;;)
+  sleep(2);
+  while(true)
   {
-
     while(c != '\0')
     {
 
@@ -97,35 +89,35 @@ void TeleopTurtle::keyLoop()
       switch(c)
       {
         case 'l':
-          ROS_WARN("LEFT");
+          ROS_INFO_STREAM("LEFT");
           angular_ = 1.0;
           dirty = true;
           ss << "key LEFT\n\r";
           cmd.data = ss.str();
           break;
         case 'r':
-          ROS_WARN("RIGHT");
+          ROS_INFO_STREAM("RIGHT");
           angular_ = -1.0;
           dirty = true;
           ss << "key RIGHT\n\r";
           cmd.data = ss.str();
           break;
         case 'u':
-          ROS_WARN("UP");
+          ROS_INFO_STREAM("UP");
           linear_ = 1.0;
           dirty = true;
           ss << "key UP\n\r";
           cmd.data = ss.str();
           break;
         case 'd':
-          ROS_WARN("DOWN");
+          ROS_INFO_STREAM("DOWN");
           linear_ = -1.0;
           dirty = true;
           ss << "key DOWN\n\r";
           cmd.data = ss.str();
           break;
         case 's':
-          ROS_WARN("STOP");
+          ROS_INFO_STREAM("STOP");
           angular_ = 0.0;
           linear_ = 0.0;
           dirty = true;
@@ -139,7 +131,7 @@ void TeleopTurtle::keyLoop()
       turtlesim::Velocity vel;
       vel.angular = a_scale_*angular_;
       vel.linear = l_scale_*linear_;
-      //ROS_WARN("wat");
+
       usleep(500000);
       if(dirty)
       {
@@ -150,7 +142,5 @@ void TeleopTurtle::keyLoop()
       usleep(1000000);
     }//while
   }
-
-
   return;
 }

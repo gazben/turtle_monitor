@@ -16,6 +16,10 @@ using namespace std;
 class Property{
 protected:
   StateRegisterState* stateRegisterPtr;
+  static unsigned int currentMaxID;
+  static unsigned int level;
+  unsigned int ID;
+  static const unsigned int maxDepth;
 public:
   Property();
   ~Property();
@@ -30,7 +34,7 @@ public:
   Property* constructChildrenBlock();
   std::vector<trilean> InputStates() const;
   trilean isEventFired(SR_regtype eventCode);
-  static trilean Evaluate(Property* root);
+  trilean Evaluate();
   void freeChildrenNode();
 };
 

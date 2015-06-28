@@ -1,64 +1,84 @@
 #include "Property.h"
 
+//Static field init
+unsigned int Property::currentMaxID = 0;
+unsigned int Property::level = 0;
+const unsigned int Property::maxDepth = 3;
+
 trilean Property::isEventFired(SR_regtype eventCode)
 {
   return (stateRegisterPtr->stateRegister & eventCode) ? FALSE : TRUE;
 }
 
-trilean Property::Evaluate(Property* root)
+trilean Property::Evaluate()
 {
-  Property* currentNode = root;
+  static Property* currentNode = this;
   trilean result = UNKNOWN;
 
   bool isChanged = 0;
 
   EventInterfaceHandler::getinstance()->getNextEvent();
-  //while (result == UNKNOWN){
-    isChanged = false;
+  isChanged = false;
 
-    for (int i = 0; i < currentNode->outputStates.size(); i++)
+  for (int i = 0; i < currentNode->outputStates.size(); i++)
+  {
+    trilean tempOutputResult = currentNode->evalFunctions[i](currentNode);
+    if (tempOutputResult != currentNode->outputStates[i])
     {
-      trilean tempOutputResult = currentNode->evalFunctions[i](currentNode);
-      if (tempOutputResult != currentNode->outputStates[i])
-      {
-        isChanged = true;
-        currentNode->outputStates[i] = tempOutputResult;
-        break;
-      }
+      isChanged = true;
+      currentNode->outputStates[i] = tempOutputResult;
+      break;
     }
+  }
 
-    //Output of the descendant node changed. We can go up in the stack.
-    if (isChanged){
-      //Free the current node.
-      if (currentNode->rootNode != nullptr){
-        currentNode = currentNode->rootNode;
+  //Output of the descendant node changed. We can go up in the stack.
+  if (isChanged){
+    //Free the current node.
+    if (currentNode->rootNode != nullptr){
+      level--;
+      currentNode = currentNode->rootNode;
 
-        //give the output to the input
-        if (currentNode->inputStates.size() != currentNode->childrenNode->outputStates.size()){
-          ROS_ERROR_STREAM("Invalid eval function size!");
-        }
-
-        //COPY right now, optimise later!
-        for (int i = 0; i < currentNode->inputStates.size(); i++){
-          currentNode->inputStates[i] = currentNode->childrenNode->outputStates[i];
-        }
-
-        delete currentNode->childrenNode;
+      if (currentNode->inputStates.size() != currentNode->childrenNode->outputStates.size()){
+        ROS_ERROR_STREAM("Invalid eval function size!");
       }
-      else{
-        //GOAL REACHED
-        result = currentNode->outputStates[0];
-        root->freeChildrenNode();
+
+      //give the output to the upper node
+      //COPY right now, optimise later!
+      for (int i = 0; i < currentNode->inputStates.size(); i++){
+        currentNode->inputStates[i] = currentNode->childrenNode->outputStates[i];
       }
+
+      delete currentNode->childrenNode;
     }
-    //No change happened we go deeper
     else{
-      currentNode->constructChildrenBlock();
-      currentNode = currentNode->childrenNode;
+      //GOAL REACHED
+      result = currentNode->outputStates[0];
+      currentNode->freeChildrenNode();
     }
-  //}
+  }
+  //No change happened we go deeper
+  else{
+    level++;
+    currentNode->constructChildrenBlock();
+    currentNode = currentNode->childrenNode;
+  }
 
-  //ROS_INFO_STREAM( (trilean::tostring(result)).c_str() );
+  //Print the current block out
+  std::string tempOut;
+  for (trilean& entry : outputStates) {
+    tempOut += (entry == OutputState::FALSE)? "F" : (entry == OutputState::TRUE)? "T" : "U";
+    tempOut += " ";
+  }
+  ROS_INFO_STREAM("Out: " + tempOut);
+  ROS_INFO_STREAM( "ID: " + std::to_string(ID) + " level: " + std::to_string(level) );
+  std::string tempIn;
+  for (trilean& entry : inputStates) {
+    tempIn += (entry == OutputState::FALSE)? "F" : (entry == OutputState::TRUE)? "T" : "U";
+    tempIn += " ";
+  }
+  ROS_INFO_STREAM("In: " + tempIn);
+  ROS_INFO_STREAM("Result: " + trilean::tostring(result) );
+
   return result;
 }
 
@@ -99,6 +119,14 @@ Property::Property()
     constructChildrenNodeFunc(nullptr)
 {
   stateRegisterPtr = StateRegisterState::getStatePointer();
+  ID = currentMaxID;
+  currentMaxID++;
+  //if we reach the button, we have to initialize the inputs to false
+  if(level == maxDepth){
+    for (trilean& entry : inputStates) {
+       entry = OutputState::FALSE;
+    }
+  }
 }
 
 

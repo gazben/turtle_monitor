@@ -8,8 +8,6 @@
 Property property1;
 
 void velMessageRecieved(const turtlesim::Velocity &msg) {
-  ROS_INFO_STREAM(std::setprecision(2) << std::fixed << "angular: " << msg.angular << ", linear:" << msg.linear);
-
   SR_regtype tempStateReg;
   if(msg.linear > 0 && msg.angular == 0){
     tempStateReg |= EVENT_UP;
@@ -32,9 +30,9 @@ void velMessageRecieved(const turtlesim::Velocity &msg) {
   }
 
   EventInterfaceHandler::getinstance()->insertEvent(tempStateReg);
-  Property::Evaluate(&property1);
+  property1.Evaluate();
 
-  ROS_INFO_STREAM("________________");
+  ROS_INFO_STREAM("---------------");
 }
 
 int main(int argc, char **argv) {

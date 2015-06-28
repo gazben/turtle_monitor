@@ -7,7 +7,8 @@
 #include <iostream>
 #include <ros/ros.h>
 /* LOCAL INCLUDES */
-#include "EventInterfaceHandler.h"
+#include "OutputState.h"
+#include "StateRegister.h"
 /* INCLUDES END */
 
 /* FUNCTION TYPE DEFINITIONS */
@@ -15,7 +16,8 @@ using namespace std;
 
 class Property{
 protected:
-  StateRegisterState* stateRegisterPtr;
+  static Property* currentNode;
+  StateRegister * stateRegisterPtr;
   static unsigned int currentMaxID;
   static unsigned int level;
   unsigned int ID;
@@ -32,7 +34,6 @@ public:
   std::function < class Property*(class Property*) > constructChildrenNodeFunc;
   std::vector <std::function < trilean(class Property*) >> evalFunctions;
   Property* constructChildrenBlock();
-  std::vector<trilean> InputStates() const;
   trilean isEventFired(SR_regtype eventCode);
   trilean Evaluate();
   void freeChildrenNode();

@@ -1,17 +1,17 @@
 #include "StateRegister.h"
 
 /*Static init*/
-SR_regtype StateRegisterState::stateRegister = 0;
-StateRegisterState* StateRegisterState::rootState = nullptr;
+SR_regtype StateRegister::stateRegister = 0;
+StateRegister *StateRegister::rootState = nullptr;
 
-StateRegisterState* StateRegisterState::getStatePointer(SR_regtype StateRegisterCopy /*= stateRegister*/)
+StateRegister *StateRegister::getStatePointer(SR_regtype StateRegisterCopy /*= stateRegister*/)
 {
   if (rootState == nullptr){
     rootState = insertState();
     return rootState;
   }
 
-  StateRegisterState* temp = rootState;
+  StateRegister * temp = rootState;
 
   while (temp != nullptr && temp->stateRegisterValue != StateRegisterCopy) {
     if (StateRegisterCopy < temp->stateRegisterValue){
@@ -32,7 +32,7 @@ StateRegisterState* StateRegisterState::getStatePointer(SR_regtype StateRegister
   return temp;
 }
 
-void StateRegisterState::freeState(StateRegisterState *root /*= rootState*/)
+void StateRegister::freeState(StateRegister *root /*= rootState*/)
 {
   if (rootState == nullptr)
     return;
@@ -42,21 +42,21 @@ void StateRegisterState::freeState(StateRegisterState *root /*= rootState*/)
   delete root;
 }
 
-StateRegisterState::~StateRegisterState()
+StateRegister::~StateRegister()
 {
 }
 
-StateRegisterState::StateRegisterState()
+StateRegister::StateRegister()
 {
   leftNode = nullptr;
   rightNode = nullptr;
   stateRegisterValue = stateRegister;
 }
 
-StateRegisterState* StateRegisterState::insertState(SR_regtype stateReg /*= stateRegister*/, StateRegisterState* root /*= rootState*/)
+StateRegister *StateRegister::insertState(SR_regtype stateReg /*= stateRegister*/, StateRegister * root /*= rootState*/)
 {
   if (root == nullptr) {
-    StateRegisterState *temp = new StateRegisterState();
+    StateRegister *temp = new StateRegister();
     temp->leftNode = temp->rightNode = nullptr;
     temp->stateRegisterValue = stateReg;
     return temp;
@@ -71,4 +71,8 @@ StateRegisterState* StateRegisterState::insertState(SR_regtype stateReg /*= stat
   }
   else
     return root;
+}
+
+void StateRegister::clearEvents() {
+  stateRegister = 0;
 }

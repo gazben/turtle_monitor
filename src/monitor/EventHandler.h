@@ -13,15 +13,15 @@
 class Eventhandler{
 public:
 	static void addEvent(SR_regtype event_code){
-		StateRegisterState::stateRegister = StateRegisterState::stateRegister | event_code;
+		StateRegister::stateRegister = StateRegister::stateRegister | event_code;
 	}
 
 	static void removeEvent(SR_regtype event_code){
-		StateRegisterState::stateRegister = StateRegisterState::stateRegister ^ event_code;
+		StateRegister::stateRegister = StateRegister::stateRegister ^ event_code;
 	}
 
 	static void clearEvents(){
-		StateRegisterState::stateRegister = 0;
+		StateRegister::stateRegister = 0;
 	}
 };
 

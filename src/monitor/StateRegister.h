@@ -8,29 +8,30 @@
 #include "Events.h"
 /* INCLUDES END */
 
-class StateRegisterState{
+class StateRegister{
 private:
 
-  static StateRegisterState* rootState;
+  static StateRegister * rootState;
 
   SR_regtype stateRegisterValue;
 
-  StateRegisterState* rightNode;
-  StateRegisterState* leftNode;
+  StateRegister * rightNode;
+  StateRegister * leftNode;
 
-  static StateRegisterState* insertState(SR_regtype stateReg = stateRegister, StateRegisterState* root = rootState);
+  static StateRegister * insertState(SR_regtype stateReg = stateRegister, StateRegister * root = rootState);
 
 public:
   
-  StateRegisterState();
-  ~StateRegisterState();
+  StateRegister();
+  ~StateRegister();
 
   //Global stateRegister
   static SR_regtype stateRegister;
+  static void clearEvents();
 
-  static void freeState(StateRegisterState *root = rootState);
+  static void freeState(StateRegister *root = rootState);
 
-  static StateRegisterState* getStatePointer(SR_regtype StateRegisterCopy = stateRegister);
+  static StateRegister * getStatePointer(SR_regtype StateRegisterCopy = stateRegister);
 
   friend class Eventhandler;
 };

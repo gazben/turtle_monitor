@@ -25,19 +25,19 @@ How to run the demo:
     ```
   * Build the executables in the root folder of your catkin workspace using the command : 
   
-  ```
-  catkin_make
-  ```  
-  or
+    ```
+    catkin_make
+    ```  
+    or
 
-  ```  
-  catkin_make install --only-pkg-with-deps turtle_monitor
-  ```
+    ```  
+    catkin_make install --only-pkg-with-deps turtle_monitor
+    ```
 
  - By running the following command the launchfile will set up the demo:
 
-  ``` 
-  roslaunch turtle_monitor demo.launch
-  ```
+    ``` 
+    roslaunch turtle_monitor turtle_monitor.launch
+    ```
 
 If any of the expressions above are new to you, search them on http://wiki.ros.org/

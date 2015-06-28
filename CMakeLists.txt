@@ -20,8 +20,6 @@ add_executable(
   vel_monitor
   src/vel_monitor.cpp
   src/monitor/EventHandler.h
-  src/monitor/EventInterfaceHandler.h
-  src/monitor/EventInterfaceHandler.cpp
   src/monitor/Events.h
   src/monitor/OutputState.h
   src/monitor/OutputState.cpp

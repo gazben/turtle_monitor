@@ -10,11 +10,8 @@
 
 class StateRegister{
 private:
-
   static StateRegister * rootState;
-
   SR_regtype stateRegisterValue;
-
   StateRegister * rightNode;
   StateRegister * leftNode;
 
@@ -33,7 +30,7 @@ public:
 
   static StateRegister * getStatePointer(SR_regtype StateRegisterCopy = stateRegister);
 
-  friend class Eventhandler;
+  friend class Property;
 };
 
 #endif // StateRegister_h__

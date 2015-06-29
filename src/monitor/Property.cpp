@@ -21,7 +21,6 @@ trilean Property::Evaluate()
     currentBlock->stateRegisterPtr = StateRegister::getStatePointer();
   }
 
-
   //Print the current block out
   ROS_INFO_STREAM("BEFORE");
   printBlock(currentBlock);
@@ -59,17 +58,9 @@ trilean Property::Evaluate()
         currentBlock->inputStates[i] = currentBlock->childrenNode->outputStates[i];
       }
       currentBlock->freeChildrenNode();
-/*
-      if(level == 2){
-        level--;
-        printBlock(currentBlock);
-        currentBlock->Evaluate();
-        printBlock(currentBlock);
-      }
-*/
-      //currentBlock->Evaluate();
-
       level--;
+
+      currentBlock->Evaluate();
     }
     else{
       //GOAL REACHED
@@ -79,8 +70,8 @@ trilean Property::Evaluate()
     }
   }
   else{
-    //No change happened we go deeper
     level++;
+    //No change happened we go deeper
     ROS_INFO_STREAM("GOING DEEPER");
     ROS_INFO_STREAM("--");
     ROS_INFO_STREAM("AFTER");
@@ -88,18 +79,16 @@ trilean Property::Evaluate()
 
     currentBlock->constructChildrenBlock();
     currentBlock = currentBlock->childrenNode;
+
   }
   ROS_INFO_STREAM("Result: " + trilean::tostring(result) );
-
   return result;
 }
 
 void Property::freeChildrenNode()
 {
-  delete childrenNode;
-
-  if (rootNode != nullptr)
-    rootNode->childrenNode = nullptr;
+  delete currentBlock->childrenNode;
+  currentBlock->childrenNode = nullptr;
 }
 
 Property* Property::constructChildrenBlock()

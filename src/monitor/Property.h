@@ -16,7 +16,7 @@ using namespace std;
 
 class Property{
 protected:
-  static Property* currentNode;
+  static Property*currentBlock;
   StateRegister * stateRegisterPtr;
   static unsigned int currentMaxID;
   static unsigned int level;
@@ -37,6 +37,8 @@ public:
   trilean isEventFired(SR_regtype eventCode);
   trilean Evaluate();
   void freeChildrenNode();
+
+  void printBlock(Property*);
 };
 
 trilean EVAL_s0(Property*);

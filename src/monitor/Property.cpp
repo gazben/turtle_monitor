@@ -4,7 +4,7 @@
 unsigned int Property::currentMaxID = 0;
 unsigned int Property::level = 0;
 const unsigned int Property::maxDepth = 2; //will be generated
-Property* Property::currentNode = nullptr;
+Property* Property::currentBlock = nullptr;
 
 trilean Property::isEventFired(SR_regtype eventCode)
 {
@@ -13,43 +13,27 @@ trilean Property::isEventFired(SR_regtype eventCode)
 
 trilean Property::Evaluate()
 {
-  if(currentNode == nullptr)
-    currentNode = this;
+  if(currentBlock == nullptr)
+    currentBlock = this;
 
-  if(currentNode->stateRegisterPtr == nullptr){
-   currentNode->stateRegisterPtr = StateRegister::getStatePointer();
+  if(currentBlock->stateRegisterPtr == nullptr){
+   currentBlock->stateRegisterPtr = StateRegister::getStatePointer();
   }
   stateRegisterPtr = StateRegister::getStatePointer();
 
   //Print the current block out
   ROS_INFO_STREAM("BEFORE");
-  std::string tempOut;
-  for (trilean& entry : currentNode->outputStates) {
-    tempOut += (entry == OutputState::FALSE)? "F" : (entry == OutputState::TRUE)? "T" : "U";
-    tempOut += " ";
-  }
-  ROS_INFO_STREAM("Out: " + tempOut);
-  ROS_INFO_STREAM( "ID: " + std::to_string(ID) + " level: " + std::to_string(level) );
-  std::string tempIn;
-  for (trilean& entry : currentNode->inputStates) {
-    tempIn += (entry == OutputState::FALSE)? "F" : (entry == OutputState::TRUE)? "T" : "U";
-    tempIn += " ";
-  }
-  ROS_INFO_STREAM("In: " + tempIn);
-  ROS_INFO_STREAM("--");
-  tempIn.clear();
-  tempOut.clear();
-
+  printBlock(currentBlock);
 
   trilean result = UNKNOWN;
   bool isChanged = false;
-  for (int i = 0; i < currentNode->outputStates.size(); i++)
+  for (int i = 0; i < currentBlock->outputStates.size(); i++)
   {
-    trilean tempOutputResult = currentNode->evalFunctions[i](currentNode);
-    if (tempOutputResult != currentNode->outputStates[i])
+    trilean tempOutputResult = currentBlock->evalFunctions[i](currentBlock);
+    if (tempOutputResult != currentBlock->outputStates[i])
     {
       isChanged = true;
-      currentNode->outputStates[i] = tempOutputResult;
+      currentBlock->outputStates[i] = tempOutputResult;
       break;
     }
   }
@@ -58,54 +42,47 @@ trilean Property::Evaluate()
   if (isChanged){
     ROS_INFO_STREAM("CHANGE");
     //Free the current node.
-    if (currentNode->rootNode != nullptr){
+    if (currentBlock->rootNode != nullptr){
       ROS_INFO_STREAM("GOING UP");
       level--;
-      currentNode = currentNode->rootNode;
 
-      if (currentNode->inputStates.size() != currentNode->childrenNode->outputStates.size()){
+      ROS_INFO_STREAM("--");
+      ROS_INFO_STREAM("AFTER");
+      printBlock(currentBlock);
+
+      currentBlock = currentBlock->rootNode;
+
+      if (currentBlock->inputStates.size() != currentBlock->childrenNode->outputStates.size()){
         ROS_ERROR_STREAM("Invalid eval function size!");
       }
 
       //give the output to the upper node
       //COPY right now, optimise later!
-      for (int i = 0; i < currentNode->inputStates.size(); i++){
-        currentNode->inputStates[i] = currentNode->childrenNode->outputStates[i];
+      for (int i = 0; i < currentBlock->inputStates.size(); i++){
+        currentBlock->inputStates[i] = currentBlock->childrenNode->outputStates[i];
       }
-      currentNode->freeChildrenNode();
-      //currentNode->Evaluate();
+      currentBlock->freeChildrenNode();
+      //currentBlock->Evaluate();
     }
     else{
       //GOAL REACHED
       ROS_INFO_STREAM("GOAL REACHED");
-      result = currentNode->outputStates[0];
-      currentNode->freeChildrenNode();
+      result = currentBlock->outputStates[0];
+      currentBlock->freeChildrenNode();
     }
   }
   else{
     //No change happened we go deeper
     level++;
     ROS_INFO_STREAM("GOING DEEPER");
-    currentNode->constructChildrenBlock();
-    currentNode = currentNode->childrenNode;
-  }
+    ROS_INFO_STREAM("--");
+    ROS_INFO_STREAM("AFTER");
+    printBlock(currentBlock);
 
-  ROS_INFO_STREAM("--");
-  ROS_INFO_STREAM("AFTER");
-  //Print the current block out
-  for (trilean& entry : currentNode->outputStates) {
-    tempOut += (entry == OutputState::FALSE)? "F" : (entry == OutputState::TRUE)? "T" : "U";
-    tempOut += " ";
+    currentBlock->constructChildrenBlock();
+    currentBlock = currentBlock->childrenNode;
   }
-  ROS_INFO_STREAM("Out: " + tempOut);
-  ROS_INFO_STREAM( "ID: " + std::to_string(ID) + " level: " + std::to_string(level) );
-  for (trilean& entry : currentNode->inputStates) {
-    tempIn += (entry == OutputState::FALSE)? "F" : (entry == OutputState::TRUE)? "T" : "U";
-    tempIn += " ";
-  }
-  ROS_INFO_STREAM("In: " + tempIn);
   ROS_INFO_STREAM("Result: " + trilean::tostring(result) );
-
   return result;
 }
 
@@ -141,11 +118,17 @@ Property::Property()
 {
   ID = currentMaxID;
   currentMaxID++;
-  ROS_INFO_STREAM("BLOCK CREATED | ID " + std::to_string(ID));
+  ROS_INFO_STREAM("BLOCK CREATED | ID " + std::to_string(ID) + " | level " + std::to_string(level));
   //if we reach the button, we have to initialize the inputs to false
   if(level == maxDepth){
-    for (trilean& entry : inputStates) {
-       entry = OutputState::FALSE;
+    inputStates.resize(2);
+    for (auto& entry : inputStates) {
+       entry = trilean(OutputState::FALSE);
+    }
+    std::string tempIn;
+    for (auto& entry : inputStates) {
+      tempIn += (entry == OutputState::FALSE)? "F" : (entry == OutputState::TRUE)? "T" : "U";
+      ROS_INFO_STREAM( tempIn );
     }
   }
 }
@@ -194,4 +177,21 @@ Property* constructS1(Property* _rootNode)
   _rootNode->outputStates.resize(2);
   _rootNode->inputStates.resize(2);
   return _rootNode;
+}
+
+void Property::printBlock(Property *block) {
+  //Print the current block out
+  std::string tempOut;
+  for (trilean& entry : block->outputStates) {
+    tempOut += (entry == OutputState::FALSE)? "F" : (entry == OutputState::TRUE)? "T" : "U";
+    tempOut += " ";
+  }
+  std::string tempIn;
+  ROS_INFO_STREAM("Out: " + tempOut);
+  ROS_INFO_STREAM( "ID: " + std::to_string(ID) + " level: " + std::to_string(level) );
+  for (trilean& entry : block->inputStates) {
+    tempIn += (entry == OutputState::FALSE)? "F" : (entry == OutputState::TRUE)? "T" : "U";
+    tempIn += " ";
+  }
+  ROS_INFO_STREAM("In: " + tempIn);
 }
